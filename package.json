@@ -1,0 +1,25 @@
+{
+  "name": "on-stream-end",
+  "version": "0.0.0",
+  "description": "Handles completion and errors of any stream - readable/writable/duplex.",
+  "repository": "tunnckoCore/on-stream-end",
+  "author": "Charlike Mike Reagent <@tunnckoCore> (http://www.tunnckocore.tk)",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "test": "standard && node test.js"
+  },
+  "dependencies": {
+    "dezalgo": "^1.0.3",
+    "is-child-process": "^1.0.0",
+    "is-node-stream": "^1.0.0",
+    "is-real-object": "^1.0.1",
+    "is-request-stream": "^1.0.1",
+    "onetime": "^1.0.0"
+  },
+  "devDependencies": {},
+  "files": [
+    "index.js"
+  ],
+  "keywords": []
+}
