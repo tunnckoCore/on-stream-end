@@ -21,5 +21,18 @@
   "files": [
     "index.js"
   ],
-  "keywords": []
+  "keywords": [
+    "complete",
+    "completion",
+    "duplex",
+    "duplexify",
+    "errors",
+    "handle",
+    "nodejs",
+    "readable",
+    "real",
+    "stream",
+    "streams",
+    "writable"
+  ]
 }
