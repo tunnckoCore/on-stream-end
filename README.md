@@ -1,6 +1,7 @@
 # [on-stream-end][author-www-url] [![npmjs.com][npmjs-img]][npmjs-url] [![The MIT License][license-img]][license-url] 
 
-> Handles completion and errors of any stream - readable/writable/duplex.
+> Handles completion and errors of any stream - readable/writable/duplex.  
+A drop-in replacement for [end-of-stream](https://github.com/mafintosh/end-of-stream).
 
 [![code climate][codeclimate-img]][codeclimate-url] [![standard code style][standard-img]][standard-url] [![travis build status][travis-img]][travis-url] [![coverage status][coveralls-img]][coveralls-url] [![dependency status][david-img]][david-url]
 
@@ -15,8 +16,44 @@ npm i on-stream-end --save
 > For more use-cases see the [tests](./test.js)
 
 ```js
-var onStreamEnd = require('on-stream-end')
+var eos = require('on-stream-end')
+
+eos(readableStream, function (err) {
+  if (err) return console.log('stream had an error or closed early')
+  console.log('stream has ended')
+})
+
+eos(writableStream, function (err) {
+  if (err) return console.log('stream had an error or closed early')
+  console.log('stream has finished')
+})
+
+eos(duplexStream, function (err) {
+  if (err) return console.log('stream had an error or closed early')
+  console.log('stream has ended and finished')
+})
+
+eos(duplexStream, {readable: false}, function (err) {
+  if (err) return console.log('stream had an error or closed early')
+  console.log('stream has ended but might still be writable')
+})
+
+eos(duplexStream, {writable: false}, function (err) {
+  if (err) return console.log('stream had an error or closed early')
+  console.log('stream has ended but might still be readable')
+})
+
+eos(readableStream, {error: false}, function (err) {
+  // do not treat emit('error', err) as a end of stream
+})
 ```
+
+
+## Related
+- [catchup](https://github.com/tunnckocore/catchup): Graceful error handling. Because core `domain` module is deprecated.
+- [end-of-stream](https://github.com/mafintosh/end-of-stream): Call a callback when a readable/writable/duplex stream has completed or failed.
+- [is-node-emitter](https://github.com/tunnckocore/is-node-emitter): Strictly checks that given value is nodejs EventEmitter.
+- [is-node-stream](https://github.com/tunnckocore/is-node-stream): Strictly and correctly checks if value is a nodejs stream.
 
 
 ## Contributing
