@@ -62,17 +62,17 @@ module.exports = function onStreamEnd (stream, opts, callback) {
   }
 
   function onlegacyfinish () {
-    if (!stream.writable) onfinish()
+    if (!stream.writable) { onfinish() }
   }
 
   function onfinish () {
     writable = false
-    if (!readable) done()
+    if (!readable) { done() }
   }
 
   function onend () {
     readable = false
-    if (!writable) done()
+    if (!writable) { done() }
   }
 
   function onexit (exitCode) {
@@ -85,8 +85,8 @@ module.exports = function onStreamEnd (stream, opts, callback) {
     var err = new Error('premature close with error code: ' + exitCode)
     err.exitCode = exitCode
 
-    if (readable && !(rs && rs.ended)) return done(err)
-    if (writable && !(ws && ws.ended)) return done(err)
+    if (readable && !(rs && rs.ended)) { return done(err) }
+    if (writable && !(ws && ws.ended)) { return done(err) }
   }
 
   function onrequest () {
@@ -96,8 +96,9 @@ module.exports = function onStreamEnd (stream, opts, callback) {
   if (isRequestStream(stream)) {
     stream.once('complete', onfinish)
     stream.once('abort', onclose)
-    if (stream.req) onrequest()
-    else stream.once('request', onrequest)
+    if (stream.req) {
+      onrequest()
+    } else { stream.once('request', onrequest) }
   } else if (writable && !ws) { // legacy streams
     /* istanbul ignore next */
     stream.once('end', onlegacyfinish)
@@ -111,14 +112,14 @@ module.exports = function onStreamEnd (stream, opts, callback) {
 
   stream.once('end', onend)
   stream.once('finish', onfinish)
-  if (opts.error !== false) stream.once('error', onerror)
+  if (opts.error !== false) { stream.once('error', onerror) }
   stream.once('close', onclose)
 
   function cleanup () {
     stream.removeListener('complete', onfinish)
     stream.removeListener('abort', onclose)
     stream.removeListener('request', onrequest)
-    if (stream.req) stream.req.removeListener('finish', onfinish)
+    if (stream.req) { stream.req.removeListener('finish', onfinish) }
     stream.removeListener('end', onlegacyfinish)
     stream.removeListener('close', onlegacyfinish)
     stream.removeListener('finish', onfinish)
@@ -129,9 +130,13 @@ module.exports = function onStreamEnd (stream, opts, callback) {
   }
 
   function done (err) {
-    cleanup()
-    if (!err || err.exitCode === 0) return callback()
-    if (err instanceof Error) return callback(err)
+    if (opts.cleanup !== false) {
+      cleanup()
+    }
+    if (err && err.exitCode !== 0 && err instanceof Error) {
+      return callback(err)
+    }
+    callback()
   }
 
   return cleanup
