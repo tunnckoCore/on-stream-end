@@ -1,6 +1,6 @@
 {
   "name": "on-stream-end",
-  "version": "0.1.1",
+  "version": "1.0.0",
   "description": "Handles completion and errors of any stream - readable/writable/duplex.",
   "repository": "tunnckoCore/on-stream-end",
   "author": "Charlike Mike Reagent <@tunnckoCore> (http://www.tunnckocore.tk)",
