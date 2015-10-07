@@ -15,88 +15,101 @@ var net = require('net')
 var eos = require('./index')
 var test = require('assertit')
 
-test('handle premature close of writable streams', function (done) {
-  var ws = fs.createWriteStream('/dev/null')
+test('should throw TypeError if not Stream, RequestStream or ChildProcess', function (done) {
+  function fixture () {
+    eos(123)
+  }
+
+  test.throws(fixture, TypeError)
+  test.throws(fixture, /expect `stream` to be Stream, RequestStream or ChildProcess/)
+  done()
+})
+
+test('should throw TypeError if not callback given', function (done) {
+  function fixture () {
+    eos(fs.createReadStream('LICENSE'), 123)
+  }
+
+  test.throws(fixture, TypeError)
+  test.throws(fixture, /expect `callback` to be function/)
+  done()
+})
+
+test('should handle premature close error of writable streams', function (done) {
+  var ws = fs.createWriteStream('._foobar')
   eos(ws, function (err) {
     test.ifError(!err)
+    test.strictEqual(/premature close/.test(err.message), true)
     test.strictEqual(err.message, 'premature close with error code: undefined')
     done()
   })
   ws.close()
 })
 
-// var eos = require('./index')
+test('should handle premature close error of readable streams', function (done) {
+  var rs = fs.createReadStream('LICENSE')
+  eos(rs, function (err) {
+    test.ifError(!err)
+    test.strictEqual(/premature close/.test(err.message), true)
+    test.strictEqual(err.message, 'premature close with error code: undefined')
+    done()
+  })
+  rs.close()
+})
 
-// var expected = 8
-// var cp = require('child_process')
+test('should handle completion of readable streams', function (done) {
+  var rs = fs.createReadStream('LICENSE')
+  eos(rs, function (err) {
+    test.ifError(err)
+    done()
+  })
+  rs.pipe(fs.createWriteStream('._LICENSE_COPY'))
+})
 
-// var ws = fs.createWriteStream('/dev/null')
-// eos(ws, function (err) {
-//   expected--
-//   assert(!!err)
-//   if (!expected) process.exit(0)
-// })
-// ws.close()
+test('should handle completion of child_process.exec', function (done) {
+  var exec = cp.exec('echo hello world')
+  eos(exec, function (err) {
+    test.ifError(err)
+    done()
+  })
+})
 
-// var rs1 = fs.createReadStream('/dev/random')
-// eos(rs1, function (err) {
-//   expected--
-//   assert(!!err)
-//   if (!expected) process.exit(0)
-// })
-// rs1.close()
+test('should handle completion of child_process.spawn', function (done) {
+  var exec = cp.spawn('echo', ['hello world'])
+  eos(exec, function (err) {
+    test.ifError(err)
+    done()
+  })
+})
 
-// var rs2 = fs.createReadStream(__filename)
-// eos(rs2, function (err) {
-//   expected--
-//   assert(!err)
-//   if (!expected) process.exit(0)
-// })
-// rs2.pipe(fs.createWriteStream('/dev/null'))
+test('should handle ECONNREFUSED of socket `net.connect(50000)`', function (done) {
+  var socket = net.connect(50000)
+  eos(socket, function (err) {
+    test.ifError(!err)
+    test.strictEqual(/connect ECONNREFUSED/.test(err.message), true)
+    test.strictEqual(err.port, 50000)
+    test.strictEqual(err.code, 'ECONNREFUSED')
+    done()
+  })
+})
 
-// var rs3 = fs.createReadStream(__filename)
-// eos(rs3, function () {
-//   throw new Error('no go')
-// })()
-// rs3.pipe(fs.createWriteStream('/dev/null'))
-
-// var exec = cp.exec('echo hello world')
-// eos(exec, function (err) {
-//   expected--
-//   assert(!err)
-//   if (!expected) process.exit(0)
-// })
-
-// var spawn = cp.spawn('echo', ['hello world'])
-// eos(spawn, function (err) {
-//   expected--
-//   assert(!err)
-//   if (!expected) process.exit(0)
-// })
-
-// var socket = net.connect(50000)
-// eos(socket, function (err) {
-//   expected--
-//   assert(!!err)
-//   if (!expected) process.exit(0)
-// })
-
-// var server = net.createServer(function (socket) {
-//   eos(socket, function () {
-//     expected--
-//     if (!expected) process.exit(0)
-//   })
-//   socket.destroy()
-// })
-// server.listen(30000, function () {
-//   var socket = net.connect(30000)
-//   eos(socket, function () {
-//     expected--
-//     if (!expected) process.exit(0)
-//   })
-// })
-
-// setTimeout(function () {
-//   assert(expected === 0)
-//   process.exit(0)
-// }, 1000)
+test('should handle completion of net.createServer', function (done) {
+  var count = 1
+  var server = net.createServer(function (socket) {
+    eos(socket, function (err) {
+      test.ifError(!err)
+      test.strictEqual(/premature close/.test(err.message), true)
+      count++
+    })
+    socket.destroy()
+  })
+  server.listen(33000, function () {
+    var sock = net.connect(33000)
+    eos(sock, function (err) {
+      test.ifError(err)
+      test.strictEqual(count, 2)
+      server.close()
+      done()
+    })
+  })
+})
