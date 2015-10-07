@@ -87,7 +87,6 @@ test('should handle ECONNREFUSED of socket `net.connect(50000)`', function (done
   eos(socket, function (err) {
     test.ifError(!err)
     test.strictEqual(/connect ECONNREFUSED/.test(err.message), true)
-    test.strictEqual(err.port, 50000)
     test.strictEqual(err.code, 'ECONNREFUSED')
     done()
   })
