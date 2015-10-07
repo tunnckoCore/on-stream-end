@@ -12,8 +12,11 @@
 var fs = require('fs')
 var cp = require('child_process')
 var net = require('net')
+var http = require('http')
 var eos = require('./index')
 var test = require('assertit')
+var through2 = require('through2')
+var concat = require('concat-stream')
 
 test('should throw TypeError if not Stream, RequestStream or ChildProcess', function (done) {
   function fixture () {
@@ -33,6 +36,31 @@ test('should throw TypeError if not callback given', function (done) {
   test.throws(fixture, TypeError)
   test.throws(fixture, /expect `callback` to be function/)
   done()
+})
+
+test('should handle completion of legacy streams', function (done) {
+  var legacy = through2()
+  eos(legacy, function (err) {
+    test.strictEqual(/premature close/.test(err.message), true)
+    test.strictEqual(err.message, 'premature close with error code: undefined')
+    done()
+  })
+  legacy.destroy()
+})
+
+test('should handle completion of request streams', function (done) {
+  var req = http.request({
+    hostname: 'www.tunnckocore.tk'
+  }, function (res) {
+    res.pipe(concat(function (buf) {
+      test.strictEqual(/doctype/gi.test(buf.toString()), true)
+    }))
+  })
+  req.end()
+  eos(req, function (err) {
+    test.ifError(err)
+    done()
+  })
 })
 
 test('should handle premature close error of writable streams', function (done) {

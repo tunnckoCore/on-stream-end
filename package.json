@@ -18,7 +18,9 @@
     "onetime": "^1.0.0"
   },
   "devDependencies": {
-    "assertit": "^0.1.0"
+    "assertit": "^0.1.0",
+    "concat-stream": "^1.5.0",
+    "through2": "^0.6.5"
   },
   "files": [
     "index.js"

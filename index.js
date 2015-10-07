@@ -87,7 +87,6 @@ module.exports = function onStreamEnd (stream, opts, callback) {
 
     if (readable && !(rs && rs.ended)) return done(err)
     if (writable && !(ws && ws.ended)) return done(err)
-    done()
   }
 
   function onrequest () {
@@ -100,7 +99,9 @@ module.exports = function onStreamEnd (stream, opts, callback) {
     if (stream.req) onrequest()
     else stream.once('request', onrequest)
   } else if (writable && !ws) { // legacy streams
+    /* istanbul ignore next */
     stream.once('end', onlegacyfinish)
+    /* istanbul ignore next */
     stream.once('close', onlegacyfinish)
   }
 
@@ -131,7 +132,6 @@ module.exports = function onStreamEnd (stream, opts, callback) {
     cleanup()
     if (!err || err.exitCode === 0) return callback()
     if (err instanceof Error) return callback(err)
-    callback()
   }
 
   return cleanup
