@@ -74,15 +74,14 @@ test('should handle premature close error of writable streams', function (done) 
   ws.close()
 })
 
-test('should handle premature close error of readable streams', function (done) {
-  var rs = fs.createReadStream('LICENSE')
-  eos(rs, function (err) {
+test('should handle premature close of readable stream', function (done) {
+  var readable = fs.createReadStream('package.json')
+  eos(readable, function (err) {
     test.ifError(!err)
-    test.strictEqual(/premature close/.test(err.message), true)
-    test.strictEqual(err.message, 'premature close with error code: undefined')
+    test.strictEqual(/premature close with error/.test(err.message), true)
     done()
   })
-  rs.close()
+  readable.close()
 })
 
 test('should handle completion of readable streams', function (done) {
