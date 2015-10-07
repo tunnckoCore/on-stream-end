@@ -17,7 +17,9 @@
     "is-request-stream": "^1.0.1",
     "onetime": "^1.0.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "assertit": "^0.1.0"
+  },
   "files": [
     "index.js"
   ],
