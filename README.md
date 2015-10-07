@@ -16,6 +16,34 @@ npm i on-stream-end --save
 > For more use-cases see the [tests](./test.js)
 
 ```js
+const eos = require('on-stream-end')
+```
+
+### [onStreamEnd](./index.js#L41)
+> Handles completion and errors of any stream - readable/writable/duplex.
+
+- `stream` **{Stream}** stream to listen for completion    
+- `opts` **{Object}** optional options object    
+- `callback` **{Function}** completion callback    
+
+**Example**
+
+```js
+const fs = require('fs')
+const eos = require('on-stream-end')
+const readable = fs.createReadStream('README.md')
+
+eos(readable, err => {
+  if (err) return console.log('stream had an error or closed early')
+  console.log('stream has ended')
+})
+```
+
+
+## More examples
+> This module is drop-in replacement for `end-of-stream`, just more strictness, more coverage and more tests.
+
+```js
 var eos = require('on-stream-end')
 
 eos(readableStream, function (err) {

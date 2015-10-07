@@ -16,6 +16,28 @@ var isRealObject = require('is-real-object')
 var isChildProcess = require('is-child-process')
 var isRequestStream = require('is-request-stream')
 
+/**
+ * > Handles completion and errors of any stream - readable/writable/duplex.
+ *
+ * **Example**
+ *
+ * ```js
+ * const fs = require('fs')
+ * const eos = require('on-stream-end')
+ * const readable = fs.createReadStream('README.md')
+ *
+ * eos(readable, err => {
+ *   if (err) return console.log('stream had an error or closed early')
+ *   console.log('stream has ended')
+ * })
+ * ```
+ *
+ * @name   onStreamEnd
+ * @param  {Stream}   `stream` stream to listen for completion
+ * @param  {Object}   `opts` optional options object
+ * @param  {Function} `callback` completion callback
+ * @api public
+ */
 module.exports = function onStreamEnd (stream, opts, callback) {
   if (!isNodeStream(stream) && !isRequestStream(stream) && !isChildProcess(stream)) {
     throw new TypeError('on-stream-end: expect `stream` to be Stream, RequestStream or ChildProcess')
