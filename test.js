@@ -38,7 +38,7 @@ test('should throw TypeError if not callback given', function (done) {
   done()
 })
 
-test('should handle completion of legacy streams', function (done) {
+test('should handle premature close of legacy streams', function (done) {
   var legacy = through2()
   eos(legacy, function (err) {
     test.strictEqual(/premature close/.test(err.message), true)
