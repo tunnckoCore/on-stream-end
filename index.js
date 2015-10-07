@@ -82,7 +82,7 @@ module.exports = function onStreamEnd (stream, opts, callback) {
   }
 
   function onclose (exitCode) {
-    var err = new Error('premature close with error code' + exitCode)
+    var err = new Error('premature close with error code: ' + exitCode)
     err.exitCode = exitCode
 
     if (readable && !(rs && rs.ended)) return done(err)
